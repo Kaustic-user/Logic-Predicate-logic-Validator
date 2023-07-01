@@ -1,303 +1,615 @@
 /**
 
-@mainpage Logic Assignment I
+@mainpage Logic Assignment II
 
-@author Aashish Chandra K (2021A7PS0467)
-@author Rishabh Patil (2021A7PS0464H)
-@author Kaustubh Mahatme (2021A7PS0464H)
-@author Tanmay Srivastava (2021A7PS0---H)
 
-Description of the project.
-   
+> <i> \b List \b Of \b Authors: </i>
+ @author Aashish Chandra K (2021A7PS0467H)
+ @author Rishabh Patil (2021A7PS0464H)
+ @author Kaustubh Mahatme (2021A7PS0312H)
+ @author Tanmay Srivastava (2021A7PS3196H)
+
+
+<i><b><u>Further Readings:</u></b></i>
+\n
+- [Algorithm(s) used](html/algo.html)
+- [Example Test Cases](html/testcases/testcases.html)
+- [Code Versitality](html/versatility.html)
 */
-#include <iostream>
-#include <string.h>
+
+
+#include<iostream>
+/*!
+  \def nl endl
+  A Macro Incorporating new-line..
+*/
+#define nl endl
 using namespace std;
-/*! \file define.h
-    \brief testing defines
-    
-    This is to test the documentation of defines.
-*/
-/*!
-  \def op(x) (x=='+' || x=='*' || x=='>')
-  A macro to check whether a character is an operator or not.
-*/
 
-/*!
-  \def nl '\n'
-  Incorporating new-line..
-*/
-
-/*!
-  \def sp " "
-  Incorporating space.
-*/
-#define op(x) (x=='+' || x=='*' || x=='>') 
-#define nl '\n' 
-#define sp " " 
-
-
-int values[26]={0};/**< A global array to store truth values of propositional atoms */
-
-class Node{
+class state{
     public:
-    char data; /*!< Variable storing character operator/operand */
-    Node* left; /*!< Left child of Node */
-    Node* right; /*!< Right child of Node */
-    
-    //! A constructor.
-    /*!
-      A single parameter constructor initizaling data to character argument and left and right children nodes to NULL.
-    */
-    Node(char ch){
-        data=ch;
-        left=NULL;right=NULL;
+    string left;
+    string right;
+    int index_of_operator;
+    state(){
+        left="";
+        right="";
+        index_of_operator=0;
     }
 };
-/*! \class Node
-        \brief A Tree Node.
-
-        A character binary tree node(2 children nodes- left and right) with parent nodes being operators and leaf nodes being operands -> "A Parse Tree". 
+/*! \class state
+        \brief Used for incorporating multiple return types in the method(s) functionality.  
     */
     
 /*! 
-    \fn string infix_to_prefix(string in) 
-    \code{.cpp}
-        string infix_to_prefix(string in){
-            string out="";
-            int ind=0,cnt=0;
-            for(;ind<in.size();ind++){
-                if(op(in[ind]) && cnt==0)break;
-                if(in[ind]=='(')cnt++;
-                if(in[ind]==')')cnt--;
-            }
-            if(in.size()==1) 
-                return in;
-            if(ind==in.size()){
-                if(in[0]=='(' && in[in.size()-1]==')')
-                    return infix_to_prefix(string(in.begin()+1,in.end()-1));
-                else if(in[0]=='~' && in[1]=='(' && in[in.size()-1]==')')
-                    return '~' + infix_to_prefix(string(in.begin()+2,in.end()-1));
-                else
-                    return in;
-            }
-            out+=in.at(ind);
-            if(in[0]=='('&&in[ind-1]==')')
-                out += infix_to_prefix(string(in.begin()+1,in.begin()+ind-1));
-            else
-                out += infix_to_prefix(string(in.begin(),in.begin()+ind));
-            if(in[ind+1]=='('&&in[in.size()-1]==')')
-                out += infix_to_prefix(string(in.begin()+ind+2,in.end()-1));
-            else
-                out += infix_to_prefix(string(in.begin()+ind+1,in.end()));
-            return out;
-        }
-    \endcode
-    
-    \brief \b Solution \b To \b Task \b 1
-    \param in Infix Logical statement as Input.
-*   \paragraph <-- write algo here and remove the - and >< -->
-    \return Returns prefix statement of the given infix string.
- */
-
-string infix_to_prefix(string in){
-    string out="";
-    int ind=0,cnt=0;
-    for(;ind<in.size();ind++){
-        if(op(in[ind]) && cnt==0)break;
-        if(in[ind]=='(')cnt++;
-        if(in[ind]==')')cnt--;
-    }
-    if(in.size()==1) 
-        return in;
-    if(ind==in.size()){
-        if(in[0]=='(' && in[in.size()-1]==')')
-            return infix_to_prefix(string(in.begin()+1,in.end()-1));
-        else if(in[0]=='~' && in[1]=='(' && in[in.size()-1]==')')
-            return '~' + infix_to_prefix(string(in.begin()+2,in.end()-1));
-        else
-            return in;
-    }
-    out+=in.at(ind);
-    if(in[0]=='('&&in[ind-1]==')')
-        out += infix_to_prefix(string(in.begin()+1,in.begin()+ind-1));
-    else
-        out += infix_to_prefix(string(in.begin(),in.begin()+ind));
-    if(in[ind+1]=='('&&in[in.size()-1]==')')
-        out += infix_to_prefix(string(in.begin()+ind+2,in.end()-1));
-    else
-        out += infix_to_prefix(string(in.begin()+ind+1,in.end()));
-    return out;
-}
-
- 
-/*! 
-    \fn Node* prefix_to_tree(string in) 
-    \code{.cpp}
-        Node* prefix_to_tree(string in){
-            Node* root=new Node(in[0]);
-            if(op(in[0]))
-            {
-                int ind=0,cnt=1;
-                while(ind<in.size() && (cnt!=0))
-                {
-                    ind++;
-                    //cout<<ind<<sp<<in[ind]<<sp<<cnt<<nl;
-                    if(op(in[ind]))cnt++;
-                    else if(in[ind]=='~');
-                    else cnt--;
+    \fn int index_of_closing_bracket(string part) 
+    ~~~~~~~~~~~~~~~{.cpp}
+        int index_of_closing_bracket(string part){
+            int ct=1;
+            int i=0;
+            while(!ct){
+                i++;
+                if(part[i]=='('){
+                    ct++;
                 }
-                //cout<<string(in.begin()+1,in.begin()+ind+1)<<" === "<<string(in.begin()+ind+1,in.end())<<nl;
-                root->left=prefix_to_tree(string(in.begin()+1,in.begin()+ind+1));
-                root->right=prefix_to_tree(string(in.begin()+ind+1,in.end()));
+                else if(part[i]==')'){
+                    ct--;
+                }
             }
-            else if(in[0]=='~')
-                root->right=prefix_to_tree(string(in.begin()+1,in.end()));
+            return i;
+        }
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param part Logical statement as input.
+*   \paragraph Goes through the string and increments cnt for '(' and decrements it for ')' till cnt becomes zero
+    \return Returns the index of the highest degree closing bracket.
+ */
+
+int index_of_closing_bracket(string part){
+    int ct=1;
+    int i=0;
+    while(ct){
+        i++;
+        if(part[i]=='('){
+            ct++;
+        }
+        else if(part[i]==')'){
+            ct--;
+        }
+    }
+    return i;
+}
+
+/*! 
+    \fn state seperate(string logic) 
+    ~~~~~~~~~~~~~~~{.cpp}
+        state seperate(string logic){
+            int len = logic.size();
+            state ans;
+            
+            string logicNew = logic.substr(1,len-2);
+            if(logicNew[0]=='(' && logicNew[1]!='~'){
+                int i = index_of_closing_bracket(logicNew);
+                ans.left = logicNew.substr(0,i+1);
+                ans.right = logicNew.substr(i+2);
+                ans.index_of_operator=i+2;
+            }
+            else if(logicNew[0]=='(' && logicNew[1]=='~'){
+                int i = index_of_closing_bracket(logicNew);
+                ans.left = logicNew.substr(1,i-1);
+                ans.right = logicNew.substr(i+2);
+                ans.index_of_operator=i+2;        
+            }
+            else if(logicNew[0]=='~' && logicNew[1]!='('){
+                ans.left = logicNew.substr(0,2);
+                ans.right = logicNew.substr(3);
+                ans.index_of_operator=3;
+            }
+            else{
+                ans.left = logicNew.substr(0,1);
+                ans.right = logicNew.substr(2);
+                ans.index_of_operator=2;
+            }
+            return ans;  
+        }
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param logic Logical statement as input.
+    \brief <b> Separates the 2 logical statements/atom/proposition which forms the compound statement </b>
+*   \paragraph <check algo>
+    \return Returns a 'state' object (which contains string left, string right and operator index [refer here](@ref state)).
+ */
+state seperate(string logic){
+    int len = logic.size();
+    state ans;
+    
+    string logicNew = logic.substr(1,len-2);
+    if(logicNew[0]=='(' && logicNew[1]!='~'){
+        int i = index_of_closing_bracket(logicNew);
+        ans.left = logicNew.substr(0,i+1);
+        ans.right = logicNew.substr(i+2);
+        ans.index_of_operator=i+2;
+    }
+    else if(logicNew[0]=='(' && logicNew[1]=='~'){
+        int i = index_of_closing_bracket(logicNew);
+        ans.left = logicNew.substr(1,i-1);
+        ans.right = logicNew.substr(i+2);
+        ans.index_of_operator=i+2;        
+    }
+    else if(logicNew[0]=='~' && logicNew[1]!='('){
+        ans.left = logicNew.substr(0,2);
+        ans.right = logicNew.substr(3);
+        ans.index_of_operator=3;
+    }
+    else{
+        ans.left = logicNew.substr(0,1);
+        ans.right = logicNew.substr(2);
+        ans.index_of_operator=2;
+    }
+    return ans;  
+}
+
+
+
+bool check_equal(string a,string b){
+    if(a==b){return true;}
+    else{return false;}
+}
+
+
+/*! 
+    \fn bool andIntroduction(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool andIntroduction(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+            int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+            if(l1<lineNum && l2<lineNum){
+                string part1 = lines[l1-1].substr(0,lines[l1-1].find("/"));
+                string part2 = lines[l2-1].substr(0,lines[l2-1].find("/"));
                 
-            return root;
+                if(part2[0]=='~'){
+                    part2 = "("+part2+")";
+                }
+
+                state ans = seperate(logic.substr(0,pos1));
+                if(logic[ans.index_of_operator]=='*'){
+                    if(check_equal(ans.left,part1) && check_equal(ans.right,part2)){return true;}
+                }
+            }
+            return false;
         }
-    \endcode
+    ~~~~~~~~~~~~~~~
     
-    \brief \b Solution \b To \b Task \b 2
-    \param in Prefix String of which the tree is to be made.
-*   \paragraph <-- write algo here and remove the - and >< -->
-    \return Returns rooted binary Parse Tree of the given prefix string.
+    
+    \param lines nth line of a proof statement (including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the and proof statement is valid </b>
+*   \paragraph <check algo>
+    \return Returns true if given and introduction holds, else returns false.
  */
-Node* prefix_to_tree(string in)
-{
-    Node* root=new Node(in[0]);
-    if(op(in[0]))
-    {
-        int ind=0,cnt=1;
-        while(ind<in.size() && (cnt!=0))
-        {
-            ind++;
-            //cout<<ind<<sp<<in[ind]<<sp<<cnt<<nl;
-            if(op(in[ind]))cnt++;
-            else if(in[ind]=='~');
-            else cnt--;
-        }
-        //cout<<string(in.begin()+1,in.begin()+ind+1)<<" === "<<string(in.begin()+ind+1,in.end())<<nl;
-        root->left=prefix_to_tree(string(in.begin()+1,in.begin()+ind+1));
-        root->right=prefix_to_tree(string(in.begin()+ind+1,in.end()));
-    }
-    else if(in[0]=='~')
-        root->right=prefix_to_tree(string(in.begin()+1,in.end()));
+bool andIntroduction(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+    int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+    if(l1<lineNum && l2<lineNum){
+        string part1 = lines[l1-1].substr(0,lines[l1-1].find("/"));
+        string part2 = lines[l2-1].substr(0,lines[l2-1].find("/"));
         
-    return root;
-}
-/*! 
-    \fn string inorder(Node* root) 
-    \code{.cpp}
-        string inorder(Node* root){
-            if(root)
-                return inorder(root->left)+ root->data +inorder(root->right);
-            else
-                return "";
+        if(part2[0]=='~'){
+            part2 = "("+part2+")";
         }
-    \endcode
-    
-    \brief \b Solution \b To \b Task \b 3
-    \param root ?whatisroot?.
-   \paragraph <-- write algo here and remove the - and >< -->
-    \return Returns inorder traversal of the parse tree.
- */
-string inorder(Node* root)
-{
-    if(root)
-        return inorder(root->left)+ root->data +inorder(root->right);
-    else
-        return "";
-}
-/*! 
-    \fn int height(Node* root) 
-    \code{.cpp}
-        int height(Node* root)
-        {
-            if(root)
-                return 1+max(height(root->left),height(root->right));
-            else
-                return 0;
+
+        state ans = seperate(logic.substr(0,pos1));
+        if(logic[ans.index_of_operator]=='*'){
+            if(check_equal(ans.left,part1) && check_equal(ans.right,part2)){return true;}
         }
-    \endcode
-    
-    \brief \b Solution \b To \b Task \b 3
-    \param root ?whatisroot?.
-   \paragraph <-- write algo here and remove the - and >< -->
-    \return Height of the parse tree.
- */
-int height(Node* root)
-{
-    if(root)
-        return 1+max(height(root->left),height(root->right));
-    else
-        return 0;
+    }
+    return false;
 }
+
+
 /*! 
-    \fn bool value(Node* root) 
-    \code{.cpp}
-        bool value(Node* root)
-        {
-            switch(root->data)
-            {
-                case '+': return value(root->left)||value(root->right);
-                case '*': return value(root->left)&&value(root->right);
-                case '>': return !value(root->left)||value(root->right);
-                case '~': return !value(root->right);
-                default: return values[root->data-'a'];
+    \fn bool andElimination1(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool andElimination1(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+            string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+            if(l1<lineNum){
+                state ans = seperate(part);
+                if(part[ans.index_of_operator]=='*'){
+                    return check_equal(ans.left,logic.substr(0,pos1));
+                }
+            }
+            return false;
+        }
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the and statement is valid(for 1st substatement) </b>
+*   \paragraph <check algo>
+    \return Returns true if given and elimination holds, else returns false.
+ */
+bool andElimination1(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+    string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+    if(l1<lineNum){
+        state ans = seperate(part);
+        if(part[ans.index_of_operator]=='*'){
+            return check_equal(ans.left,logic.substr(0,pos1));
+        }
+    }
+    return false;
+}
+
+/*! 
+    \fn bool andElimination2(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool andElimination2(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';
+            string part = lines[l1-1].substr(0,lines[l1-1].find("/"));  
+
+            if(l1<lineNum){
+                state ans = seperate(part);
+                if(part[ans.index_of_operator]=='*'){
+                    if(part[ans.index_of_operator+2]=='~'){
+                        int len = ans.right.size();
+                        ans.right = ans.right.substr(1,len-2);
+                    }
+                    return check_equal(ans.right,logic.substr(0,pos1));
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the and statement is valid(for 2nd substatement) </b>
+*   \paragraph <check algo>
+    \return Returns true if given and elimination holds, else returns false.
+ */
+bool andElimination2(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';
+    string part = lines[l1-1].substr(0,lines[l1-1].find("/"));  
+
+    if(l1<lineNum){
+        state ans = seperate(part);
+        if(part[ans.index_of_operator]=='*'){
+            if(part[ans.index_of_operator+2]=='~'){
+                int len = ans.right.size();
+                ans.right = ans.right.substr(1,len-2);
+            }
+            return check_equal(ans.right,logic.substr(0,pos1));
+        }
+    }
+    return false;
+}
+
+
+/*! 
+    \fn bool orIntroduction1(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool orIntroduction1(string lines[] , string logic , int lineNum,int pos1,int pos2){  //not working 
+            int l1 = (logic[pos2 + 1]) - '0';
+            string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+
+            if(l1<lineNum){
+                state ans = seperate(logic.substr(0,pos1));
+                if(logic[ans.index_of_operator]=='+'){
+                    if(ans.left[1]=='~'){
+                        int len = ans.left.size();
+                        ans.left = ans.left.substr(1,len-2);
+                    }
+                    return check_equal(ans.left,part);
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the or statement is valid(for 1st substatement) </b>
+*   \paragraph <check algo>
+    \return Returns true if given or elimination holds, else returns false.
+ */
+bool orIntroduction1(string lines[] , string logic , int lineNum,int pos1,int pos2){  //not working 
+    int l1 = (logic[pos2 + 1]) - '0';
+    string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+
+    if(l1<lineNum){
+        state ans = seperate(logic.substr(0,pos1));
+        if(logic[ans.index_of_operator]=='+'){
+            if(ans.left[1]=='~'){
+                int len = ans.left.size();
+                ans.left = ans.left.substr(1,len-2);
+            }
+            return check_equal(ans.left,part);
+        }
+    }
+    return false;
+}
+
+/*! 
+    \fn bool orIntroduction2(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool orIntroduction2(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';
+            string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+
+            if(l1<lineNum){
+                state ans = seperate(logic.substr(0,pos1));
+                if(logic[ans.index_of_operator]=='+'){
+                    int len = ans.right.size();
+                    if(ans.right[1]=='~'){
+                        ans.right = ans.right.substr(1,len-2);
+                    }
+                    return check_equal(ans.right,part);
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the or statement is valid(for 2nd substatement) </b>
+*   \paragraph <check algo>
+    \return Returns true if given or elimination holds, else returns false.
+ */
+bool orIntroduction2(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';
+    string part = lines[l1-1].substr(0,lines[l1-1].find("/"));
+
+    if(l1<lineNum){
+        state ans = seperate(logic.substr(0,pos1));
+        if(logic[ans.index_of_operator]=='+'){
+            int len = ans.right.size();
+            if(ans.right[1]=='~'){
+                ans.right = ans.right.substr(1,len-2);
+            }
+            return check_equal(ans.right,part);
+        }
+    }
+    return false;
+}
+
+/*! 
+    \fn bool impliesElimination(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool impliesElimination(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+            int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+            if(l1<lineNum && l2<lineNum){
+                string hasImplies = lines[l1-1].substr(0,lines[l1-1].find("/"));
+                string part = lines[l2-1].substr(0,lines[l2-1].find("/"));
+
+                state ans = seperate(hasImplies);
+                if(hasImplies[ans.index_of_operator]=='>'){
+                    if(ans.left[1]=='~'){
+                        int len = ans.left.size();
+                        ans.left = ans.left.substr(1,len-2);
+                    }         
+                    if(ans.right[1]=='~'){
+                        int len = ans.right.size();
+                        ans.right = ans.right.substr(1,len-2);
+                    }
+                    return (check_equal(ans.left,part) && check_equal(ans.right,logic.substr(0,pos1)));
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the implies statement is valid(by checking if substatement is present as Premise) </b>
+*   \paragraph <check algo>
+    \return Returns true if given implies elimination holds, else returns false.
+ */
+bool impliesElimination(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+    int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+    if(l1<lineNum && l2<lineNum){
+        string hasImplies = lines[l1-1].substr(0,lines[l1-1].find("/"));
+        string part = lines[l2-1].substr(0,lines[l2-1].find("/"));
+
+        state ans = seperate(hasImplies);
+        if(hasImplies[ans.index_of_operator]=='>'){
+            if(ans.left[1]=='~'){
+                int len = ans.left.size();
+                ans.left = ans.left.substr(1,len-2);
+            }         
+            if(ans.right[1]=='~'){
+                int len = ans.right.size();
+                ans.right = ans.right.substr(1,len-2);
+            }
+            return (check_equal(ans.left,part) && check_equal(ans.right,logic.substr(0,pos1)));
+        }
+    }
+    return false;
+}
+
+
+/*! 
+    \fn bool MT(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool MT(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+            int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+            if(l1<lineNum && l2<lineNum){
+                string hasImplies = lines[l1-1].substr(0,lines[l1-1].find("/"));
+                string part = lines[l2-1].substr(0,lines[l2-1].find("/"));
+
+                state ans = seperate(hasImplies);
+                if(hasImplies[ans.index_of_operator]=='>'){
+                    if((ans.left).size()==1 || (((ans.left)[0]!='~') && (ans.left)[1]!='~')){
+                        return(check_equal("~"+ans.right,part) && check_equal("~"+ans.left,logic.substr(0,pos1)));
+                    }
+                    else{
+                        return(check_equal("~"+ans.right,part) && check_equal("~("+ans.left+")",logic.substr(0,pos1)));
+                    }
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
+    
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \param pos1 line number of substatement 1 of the and statement.
+    \param pos2 line number of substatement 2 of the and statement.
+    \brief <b> Checks whether the statement deduced from the implies statement is valid(by checking if the negation of the substatement(2) is present as Premise) </b>
+*   \paragraph <check algo>
+    \return Returns true if given MT holds, else returns false.
+ */
+bool MT(string lines[] , string logic , int lineNum,int pos1,int pos2){
+    int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+    int l2 = (logic[pos2 + 3]) - '0';   //proper line number
+
+    if(l1<lineNum && l2<lineNum){
+        string hasImplies = lines[l1-1].substr(0,lines[l1-1].find("/"));
+        string part = lines[l2-1].substr(0,lines[l2-1].find("/"));
+
+        state ans = seperate(hasImplies);
+        if(hasImplies[ans.index_of_operator]=='>'){
+            if((ans.left).size()==1 || (((ans.left)[0]!='~') && (ans.left)[1]!='~')){
+                return(check_equal("~"+ans.right,part) && check_equal("~"+ans.left,logic.substr(0,pos1)));
+            }
+            else{
+                return(check_equal("~"+ans.right,part) && check_equal("~("+ans.left+")",logic.substr(0,pos1)));
             }
         }
+    }
+    return false;
+}
+/*! 
+    \fn bool MT(string lines[] , string logic , int lineNum,int pos1,int pos2)
+    ~~~~~~~~~~~~~~~{.cpp}
+        bool MT(string lines[] , string logic , int lineNum,int pos1,int pos2){
+            int l1 = (logic[pos2 + 1]) - '0';   //proper line number
+            int l2 = (logic[pos2 + 3]) - '0';   //proper line number
 
-    \endcode
+            if(l1<lineNum && l2<lineNum){
+                string hasImplies = lines[l1-1].substr(0,lines[l1-1].find("/"));
+                string part = lines[l2-1].substr(0,lines[l2-1].find("/"));
+
+                state ans = seperate(hasImplies);
+                if(hasImplies[ans.index_of_operator]=='>'){
+                    return(check_equal("~"+ans.right,part) && check_equal("~("+ans.left+")",logic.substr(0,pos1)));
+                }
+            }
+            return false;
+        }
+
+    ~~~~~~~~~~~~~~~
     
-    \brief \b Solution \b To \b Task \b 3
-    \param root ?whatisroot?.
-   \paragraph <-- write algo here and remove the - and >< -->
-    \return Height of the parse tree.
+    
+    \param lines nth line of a proof statement(including proof rule and line number(s)).
+    \param logic Logical statement of the proof line
+    \param lineNum Line number of the proof statement the function is working on.
+    \brief <b> checks whether the operator mentioned in the proof matches with the proof line above </b>
+*   \paragraph <check algo>
+    \return Returns true if matching is correct.
  */
-bool value(Node* root)
-    {
-        switch(root->data)
-        {
-            case '+': return value(root->left)||value(root->right);
-            case '*': return value(root->left)&&value(root->right);
-            case '>': return !value(root->left)||value(root->right);
-            case '~': return !value(root->right);
-            default: return values[root->data-'a'];
+bool checkValid(string lines[] , string logic , int lineNum){
+
+    int pos1 = logic.find("/");
+    if(logic[pos1+1]=='P'){
+        return true;
+    }
+    int pos2 = logic.find("/",pos1+1);
+
+    string rule =logic.substr(pos1+1,pos2-pos1-1);
+
+    if(rule=="*i"){ 
+        return andIntroduction(lines,logic,lineNum,pos1,pos2);                                                                                                     
+    }
+    else if(rule=="*e1"){
+        return andElimination1(lines,logic,lineNum,pos1,pos2);                                              
+    }
+    else if(rule=="*e2"){
+        return andElimination2(lines,logic,lineNum,pos1,pos2);                                                          
+    }
+    else if(rule=="+i1"){   
+        return orIntroduction1(lines,logic,lineNum,pos1,pos2);                                                         
+    }
+    else if(rule=="+i2"){
+        return orIntroduction2(lines,logic,lineNum,pos1,pos2);
+    }
+    else if(rule==">e"){
+        return impliesElimination(lines,logic,lineNum,pos1,pos2);
+    }
+    else if(rule=="MT"){
+        return MT(lines,logic,lineNum,pos1,pos2);
+    }
+    else{
+        return false;
+    }
+}
+
+int main(){
+    int n;
+    cin>>n;
+    string lines[n];
+    string str;
+
+    for(int i=0;i<n;i++){  
+        cin>>str;
+        lines[i] = str;
+    }
+
+    for(int i=0;i<n;i++){
+        if(checkValid(lines,lines[i],i+1)){
+            continue;
+        }
+        else{
+            cout<<"Invalid Proof"<<nl;
+            return 0;
         }
     }
-
-int main()
-{
-    cout<<"\n\nIMPLEMENTING PARSE TREE:"<<nl;
-    string k= "p";
-    cout<<"\nPLEASE ENTER A WELL-DEFINED INFIX EXPRESSION : ";
-    cin>>k;
-
-    cout<<"\nThe Prefix Logical expression for the given input is :";
-    cout<<infix_to_prefix(k)<<nl;
-    Node* root = prefix_to_tree(infix_to_prefix(k));
-    cout<<"\n A parse Tree has been successfully created.\n";
-    //auto start1 = chrono::steady_clock::now();
-    //auto finish1 = chrono::steady_clock::now();
-    //double elapsed_time1 = double(chrono::duration_cast<chrono::nanoseconds>(finish1-start1).count());
-    //cout <<"task1: "<< elapsed_time1 << "ns\n";
-
-    cout<<"\nThe inorder traversal(infix) of the Parse tree is: ";
-    cout<<inorder(root)<<nl;
-    cout<<"\nThe Height of the Parse tree is: ";
-    cout<<height(root)<<nl;
-
-    int count=0;
-    cout<<"\nEnter the number of propositional atoms which are true : "<<nl;
-    cin>>count;
-    cout<<"\nPlease enter all the propositional atoms which are true: \n";
-    while(count--)
-    {   
-        char ch; cin>>ch;
-        values[ch-'a']++;
-    }
-    cout<<"The truth value of the given logical expression under these premises is: ";
-    cout<<value(root)<<nl<<nl;
-    return 0;
+    cout<<"Valid Proof"<<nl;
 }
+
+
+
+
+
+
